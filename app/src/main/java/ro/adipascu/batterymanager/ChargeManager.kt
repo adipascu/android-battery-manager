@@ -1,38 +1,41 @@
 package ro.adipascu.batterymanager
 
+import android.util.Log
 import com.topjohnwu.superuser.Shell
 
-val DIRECTORY = "/sys/devices/platform/google,charger/"
-val STOP_FILE = DIRECTORY + "charge_stop_level"
-val START_FILE = DIRECTORY + "charge_start_level"
+private const val DIRECTORY = "/sys/devices/platform/google,charger/"
+private const val STOP_FILE = DIRECTORY + "charge_stop_level"
+private const val START_FILE = DIRECTORY + "charge_start_level"
 
-fun read(path: String) =
+private fun read(path: String) =
     Shell.cmd("cat $path").exec().out.first()
         .toInt()
 
-fun write(path: String, value: Int) {
+private fun write(path: String, value: Int) {
     val result = Shell.cmd("echo $value >> $path").exec()
     if (!result.isSuccess) {
         throw Error("Failed to write file\n" + result.err.firstOrNull())
     }
 }
 
+private var lastIsEnabled: Boolean? = null
+
 fun setCharging(isEnabled: Boolean) {
+    if (isEnabled == lastIsEnabled) {
+        return
+    }
+    Log.i("ChargeManager", "${if (isEnabled) "Enabled" else "Disabled"} charging")
+    val startValue: Int
+    val stopValue: Int
     if (isEnabled) {
-        write(START_FILE, 70)
-        write(STOP_FILE, 75)
-
-//        write(START_FILE, 0)
-//        write(STOP_FILE, 100)
+        startValue = 70
+        stopValue = 75
     } else {
-        write(START_FILE, 0)
-        write(STOP_FILE, 0)
+        startValue = 0
+        stopValue = 1
     }
-}
-
-class ChargeManager {
-
-    companion object {
-
-    }
+    write(START_FILE, startValue)
+    write(STOP_FILE, stopValue)
+    write(START_FILE, startValue)
+    lastIsEnabled = isEnabled
 }
