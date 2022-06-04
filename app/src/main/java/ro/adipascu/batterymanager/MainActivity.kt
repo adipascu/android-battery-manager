@@ -16,11 +16,14 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.topjohnwu.superuser.Shell
 import ro.adipascu.batterymanager.ui.theme.BatteryManagerTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Shell.getShell()
+        TemperatureMonitorService.start(this)
         setContent {
             BatteryManagerTheme {
                 // A surface container using the 'background' color from the theme
@@ -51,7 +54,6 @@ class MainActivity : ComponentActivity() {
 
         }
         registerReceiver(receiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
-//        this.registerReceiver(this.mBatInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
     }
 }
 

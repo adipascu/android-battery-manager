@@ -3,7 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="ro.adipascu.batterymanager">
 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -13,6 +16,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BatteryManager"
         tools:targetApi="31">
+
+        <service android:name=".TemperatureMonitorService" />
+
+        <service
+            android:name=".Power"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <receiver
+            android:name=".BootReceiverService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

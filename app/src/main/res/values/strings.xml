@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Battery Manager</string>
+    <string name="temperature_service_channel">Foregy</string>
 </resources>
