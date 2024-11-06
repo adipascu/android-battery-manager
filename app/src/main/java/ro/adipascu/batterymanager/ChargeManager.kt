@@ -12,9 +12,12 @@ private fun read(path: String) =
         .toInt()
 
 private fun write(path: String, value: Int) {
+    if (read(path) == value) {
+        return
+    }
     val result = Shell.cmd("echo $value >> $path").exec()
     if (!result.isSuccess) {
-        throw Error("Failed to write file\n" + result.err.firstOrNull())
+        throw Error("Failed to write file $path\n" + result.err.firstOrNull())
     }
 }
 
@@ -34,8 +37,12 @@ fun setCharging(isEnabled: Boolean) {
         startValue = 0
         stopValue = 1
     }
-    write(START_FILE, startValue)
-    write(STOP_FILE, stopValue)
-    write(START_FILE, startValue)
+    try {
+        write(STOP_FILE, stopValue)
+        write(START_FILE, startValue)
+    } catch (e: Error){
+        write(START_FILE, startValue)
+        write(STOP_FILE, stopValue)
+    }
     lastIsEnabled = isEnabled
 }
