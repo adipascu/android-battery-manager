@@ -40,9 +40,13 @@ fun setCharging(isEnabled: Boolean) {
     try {
         write(STOP_FILE, stopValue)
         write(START_FILE, startValue)
-    } catch (e: Error){
+    } catch (e: Error) {
         write(START_FILE, startValue)
         write(STOP_FILE, stopValue)
     }
     lastIsEnabled = isEnabled
 }
+
+fun chargeStatus() =
+    "Start ${read(START_FILE)} stop ${read(STOP_FILE)}"
+

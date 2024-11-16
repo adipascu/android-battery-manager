@@ -1,48 +1,28 @@
 package ro.adipascu.batterymanager
 
 import android.os.Bundle
-import android.widget.Toast
+import android.view.View
+import android.widget.Button
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.topjohnwu.superuser.Shell
-import ro.adipascu.batterymanager.ui.theme.BatteryManagerTheme
+
 
 class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Shell.getShell()
-        setCharging(true)
-        Toast.makeText(this, "Adrian's battery manager enabled", Toast.LENGTH_LONG).show()
-        setContent {
-            BatteryManagerTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    Greeting("Android")
-                }
+
+    private val button by lazy {
+        Button(this).apply {
+            text = chargeStatus()
+            setOnClickListener {
+                setCharging(true)
+                text = chargeStatus()
             }
         }
     }
-}
 
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
 
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    BatteryManagerTheme {
-        Greeting("Android")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Shell.getShell()
+        setContentView(button)
     }
 }
