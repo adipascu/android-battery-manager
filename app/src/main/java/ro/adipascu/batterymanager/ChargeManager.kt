@@ -1,15 +1,16 @@
 package ro.adipascu.batterymanager
 
+import android.content.Context.BATTERY_SERVICE
+import android.os.BatteryManager
 import android.util.Log
 import com.topjohnwu.superuser.Shell
+
 
 private const val DIRECTORY = "/sys/devices/platform/google,charger/"
 private const val STOP_FILE = DIRECTORY + "charge_stop_level"
 private const val START_FILE = DIRECTORY + "charge_start_level"
 
-private fun read(path: String) =
-    Shell.cmd("cat $path").exec().out.first()
-        .toInt()
+private fun read(path: String) = Shell.cmd("cat $path").exec().out.first().toInt()
 
 private fun write(path: String, value: Int) {
     if (read(path) == value) {
@@ -34,8 +35,12 @@ fun setCharging(isEnabled: Boolean) {
         startValue = 70
         stopValue = 75
     } else {
-        startValue = 0
-        stopValue = 1
+        var batLevel = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
+        if (batLevel < 2) {
+            batLevel = 2
+        }
+        startValue = batLevel - 1
+        stopValue = batLevel
     }
     try {
         write(STOP_FILE, stopValue)
@@ -47,6 +52,5 @@ fun setCharging(isEnabled: Boolean) {
     lastIsEnabled = isEnabled
 }
 
-fun chargeStatus() =
-    "Start ${read(START_FILE)} stop ${read(STOP_FILE)}"
+fun chargeStatus() = "Start ${read(START_FILE)} stop ${read(STOP_FILE)}"
 
