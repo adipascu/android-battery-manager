@@ -1,10 +1,8 @@
 package ro.adipascu.batterymanager
 
-import android.content.Context.BATTERY_SERVICE
 import android.os.BatteryManager
 import android.util.Log
 import com.topjohnwu.superuser.Shell
-
 
 private const val DIRECTORY = "/sys/devices/platform/google,charger/"
 private const val STOP_FILE = DIRECTORY + "charge_stop_level"

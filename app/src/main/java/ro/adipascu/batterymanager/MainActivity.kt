@@ -1,11 +1,12 @@
 package ro.adipascu.batterymanager
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.LinearLayout
 import androidx.activity.ComponentActivity
+import androidx.core.content.ContextCompat
 import com.topjohnwu.superuser.Shell
-
 
 class MainActivity : ComponentActivity() {
 
@@ -29,8 +30,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Shell.getShell()
@@ -38,5 +37,9 @@ class MainActivity : ComponentActivity() {
         linearLayout.addView(startButton)
         linearLayout.addView(stopButton)
         setContentView(linearLayout)
+        ContextCompat.startForegroundService(
+            this,
+            Intent(this, TemperatureMonitorService::class.java)
+        )
     }
 }
