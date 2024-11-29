@@ -24,6 +24,7 @@ class TemperatureMonitorService : Service() {
             .setContentText("Monitoring battery temperature")
             .setSmallIcon(android.R.drawable.ic_menu_info_details)
             .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setOngoing(true)
     }
 
     override fun onCreate() {
