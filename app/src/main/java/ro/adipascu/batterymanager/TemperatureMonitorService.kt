@@ -32,12 +32,27 @@ class TemperatureMonitorService : Service() {
         val notificationManager = NotificationManagerCompat.from(this)
         registerReceiver(object : BroadcastReceiver() {
             override fun onReceive(c: Context?, intent: Intent) {
+                if (!intent.hasExtra(
+                        BatteryManager.EXTRA_TEMPERATURE
+                    )
+                ) {
+                    throw Error("Missing EXTRA_TEMPERATURE")
+                }
                 val temperature = intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1) / 10.0
+                val chargeEnabled = temperature < 30.0
+                setCharging(chargeEnabled)
 
                 if (notificationManager.areNotificationsEnabled()) {
                     notificationManager.notify(
                         1,
-                        notificationBuilder.setContentText("Battery temperature $temperature°C")
+                        notificationBuilder.setContentText("Battery $temperature°C charge $chargeEnabled")
+                            .setSmallIcon(
+                                if (chargeEnabled) {
+                                    android.R.drawable.ic_menu_add
+                                } else {
+                                    android.R.drawable.ic_menu_info_details
+                                }
+                            )
                             .build()
                     )
                 }
@@ -46,7 +61,7 @@ class TemperatureMonitorService : Service() {
         }, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
 
         notificationManager.createNotificationChannel(
-            NotificationChannelCompat.Builder(channelId, NotificationManagerCompat.IMPORTANCE_LOW)
+            NotificationChannelCompat.Builder(channelId, NotificationManagerCompat.IMPORTANCE_MIN)
                 .setName("Battery Monitor Service")
                 .build()
         )
